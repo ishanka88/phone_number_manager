@@ -24,6 +24,7 @@ Follow these steps after cloning the project:
 # Quick Start
 
 git clone https://github.com/your-username/phone-number-manager.git
+
 cd phone-number-manager
 
 python3 -m venv venv
