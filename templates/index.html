@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        p, label {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .status-box, .form-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-box p {
+            margin: 5px 0;
+        }
+
+        .form-box input, .form-box button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-box button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-box button:hover {
+            background-color: #45a049;
+        }
+
+        .flash-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .flash-message.error {
+            background-color: #f44336;
+        }
+
+        .flash-message.warning {
+            background-color: #ff9800;
+        }
+
+        .flash-message.success {
+            background-color: #4CAF50;
+        }
+        .flash-message.info {
+            background-color: #2196F3;
+        }
+        .flash-message.danger {
+            background-color: #f44336;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+
+        .message-list {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .message-list li {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .message-list li.success {
+            background-color: #4CAF50;
+        }
+
+        .message-list li.warning {
+            background-color: #f44336;
+        }
+
+        .message-list li.danger {
+            background-color: #f44336;
+        }
+        .message-list li.info {
+            background-color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Phone Number Manager</h1>
+
+        <!-- Display Current Status -->
+        <div class="status-box">
+            <h3>Current Status</h3>
+                    <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(category_filter=["success","warning","danger"], with_categories=true) %}
+              {% if messages %}
+                  <ul class="message-list">
+                      {% for category, message in messages %}
+                          <li class="{{ category }}">{{ message }}</li>
+                      {% endfor %}
+                  </ul>
+              {% endif %}
+            {% endwith %}
+            <p><strong>Total Numbers:</strong> {{ total_count }}</p>
+            <p><strong>Available To Export:</strong> {{ available_count }}</p>
+            <p><strong>Exported Numbers:</strong> {{ total_count - available_count}}</p>
+            <p><strong>Exported Files Count:</strong> {{ exported_file_count }}</p>
+        </div>
+
+        <!-- Upload Excel File Form -->
+        <div class="form-box">
+            <h2>📤 Upload Excel File</h2>
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".xlsx" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+
+        <hr>
+
+        <!-- Export Phone Numbers Form -->
+        <div class="form-box">
+            <h2>📥 Export Phone Numbers</h2>
+            {% with messages = get_flashed_messages(category_filter=["info"], with_categories=true) %}
+            {% if messages %}
+                <ul class="message-list">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+          {% endwith %}
+          <form action="/download" method="POST" onsubmit="return confirmExport();">
+            <div>
+                <label for="country">Select Country : </label>
+                <select name="country" id="country">
+                    <option value="all">All Countries</option>
+                    {% for code in country_codes %}
+                        <option value="{{ code[0] }}" data-name="{{ code[1] }}">{{ code[0] }} - {{ code[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div style="padding-top: 10px;">
+                <label for="count">How many numbers to export :</label>
+                <input type="number" name="count" id="count" value="100" min="1">
+                <button type="submit">Export</button>
+            </div>
+        </form>
+        </div>
+
+
+    </div>
+</body>
+</html>
+
+<script>
+  function confirmExport() {
+      const count = document.getElementById("count").value;
+      const countrySelect = document.getElementById("country");
+      const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+      const countryName = selectedOption.getAttribute("data-name") || "All Countries";
+      
+      return confirm(`Are you sure you want to export ${count} numbers from "${countryName}"?`);
+  }
+</script>
