@@ -1,0 +1,13 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# VS Code or other editor configs (optional)
+.vscode/
+
+
+# Environment variables (if any)
+.env
