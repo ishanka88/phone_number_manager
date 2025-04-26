@@ -125,6 +125,19 @@
         .message-list li.info {
             background-color: #2196F3;
         }
+        .message-list li.github {
+            background-color: #2196F3;
+        }
+        .message-list li.github-danger {
+            background-color: #f44336;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -191,15 +204,38 @@
             </div>
           </form>
         </div>
-        <h2>Git Push</h2>
-        <form action="/git_push" method="POST">
-            <button type="submit">Push Changes to GitHub</button>
-        </form>
+        <div class="form-box">
+          <h2>Git Push</h2>
+          {% with messages = get_flashed_messages(category_filter=["github","github-danger"], with_categories=true) %}
+            {% if messages %}
+              <ul class="message-list">
+                  {% for category, message in messages %}
+                      <li class="{{ category }}">{{ message }}</li>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+          {% endwith %}
+          <div >
+            <form action="/git_push" method="POST" onsubmit="return confirmGithub();">
+                <div class="center" >
+                    <button type="submit">Push Changes to GitHub</button>
+                </div>
+            </form>
+
+          </div>
+
+        </div>
 
 
     </div>
 </body>
 </html>
+
+<script>
+  function confirmGithub() {
+      return confirm(`Are you sure you want to git push?`);
+  }
+</script>
 
 <script>
   function confirmExport() {
