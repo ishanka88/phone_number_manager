@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 import os
+import subprocess
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -264,6 +265,27 @@ def download():
     flash(f"Exported {len(available_numbers)} numbers to {filename}", 'info')
     
     return redirect('/')
+
+
+@app.route('/git_push', methods=['POST'])
+def git_push():
+    try:
+        # Add all changes
+        subprocess.run(["git", "add", "."], check=True)
+
+        # Commit the changes
+        subprocess.run(['git', 'commit', '-m', 'Auto commit from Flask UI'], check=True)
+
+        # Push the changes
+        subprocess.run(['git', 'push', 'origin', 'main'], check=True)
+
+        flash("Changes pushed successfully to GitHub!", "github")
+
+    except subprocess.CalledProcessError as e:
+        flash(f"Error during git push: {str(e)}", "github-danger")
+
+    return redirect('/')
+
 
 
 if __name__ == '__main__':
