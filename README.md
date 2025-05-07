@@ -23,7 +23,7 @@ Follow these steps after cloning the project:
 
 # Quick Start
 
-git clone https://github.com/your-username/phone-number-manager.git
+git clone https://github.com/ishanka88/phone_number_manager.git
 
 cd phone-number-manager
 
